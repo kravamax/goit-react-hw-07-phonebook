@@ -1,14 +1,19 @@
 import { useState } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
-import contactsActions from 'redux/contacts/contacts-actions';
-import { getContacts } from 'redux/contacts/contacts-selectors';
+// import { useDispatch, useSelector } from 'react-redux';
+// import contactsActions from 'redux/contacts/contacts-actions';
+// import { getContacts } from 'redux/contacts/contacts-selectors';
 import s from './ContactForm.module.css';
+import toast from 'react-hot-toast';
+
+import { useAddContactMutation } from '../../redux/contactsSlice';
 
 const ContactForm = () => {
   const [name, setName] = useState('');
   const [number, setNumber] = useState('');
-  const dispatch = useDispatch();
-  const listContactsNames = useSelector(getContacts);
+  // const dispatch = useDispatch();
+  // const listContactsNames = useSelector(getContacts);
+
+  const [addContact] = useAddContactMutation();
 
   const handleChange = event => {
     const { value, name } = event.currentTarget;
@@ -17,25 +22,40 @@ const ContactForm = () => {
     if (name === 'number') setNumber(value);
   };
 
-  const handleSubmit = event => {
+  // const handleSubmit = event => {
+  //   event.preventDefault();
+
+  //   if (checkForExistContact(name)) {
+  //     toast.error(`${name} is already in contacts`);
+  //     return;
+  //   }
+
+  //   toast.success(`${name} was added.`);
+
+  //   dispatch(contactsActions.addContact({ name, number }));
+
+  //   reset();
+  // };
+
+  const handleSubmit = async event => {
     event.preventDefault();
 
-    if (checkForExistContact(name)) {
-      alert(`${name} is already in contacts`);
-      return;
+    try {
+      await addContact({ name, number });
+      toast.success(`${name} was added.`);
+      reset();
+    } catch (error) {
+      toast.error(`${name} is already in contacts`);
+      console.log(error);
     }
-
-    dispatch(contactsActions.addContact({ name, number }));
-
-    reset();
   };
 
-  const checkForExistContact = addNameContact => {
-    const normalizedNameContact = addNameContact.toLowerCase();
-    return listContactsNames.some(
-      ({ name }) => name.toLowerCase() === normalizedNameContact
-    );
-  };
+  // const checkForExistContact = addNameContact => {
+  //   const normalizedNameContact = addNameContact.toLowerCase();
+  //   return listContactsNames.some(
+  //     ({ name }) => name.toLowerCase() === normalizedNameContact
+  //   );
+  // };
 
   const reset = () => {
     setName('');

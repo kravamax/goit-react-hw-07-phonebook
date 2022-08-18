@@ -1,18 +1,38 @@
 import React from 'react';
-import { useSelector } from 'react-redux';
-import { getVisibleContacts } from 'redux/contacts/contacts-selectors';
 import Contact from '../Contact';
 import s from './ContactList.module.css';
+import { useSelector } from 'react-redux';
+
+import { useGetContactsQuery } from '../../redux/contactsSlice';
 
 const ContactList = () => {
-  const list = useSelector(getVisibleContacts);
+  const { data = [], error, isLoading } = useGetContactsQuery();
+  const filterData = useSelector(state => state.filter);
+
+  const contacts =
+    filterData.value !== ''
+      ? data.filter(({ name }) =>
+          name
+            .toString()
+            .toLowerCase()
+            .includes(filterData.toString().toLowerCase())
+        )
+      : [...data];
 
   return (
-    <ul className={s.listContainer}>
-      {list.map(({ name, number, id }) => (
-        <Contact key={id} name={name} number={number} id={id} />
-      ))}
-    </ul>
+    <>
+      {error && <h2>Упс, что-то пошло не так...</h2>}
+
+      {isLoading ? (
+        <h2>...Loading...</h2>
+      ) : (
+        <ul className={s.listContainer}>
+          {contacts.map(({ name, number, id }) => (
+            <Contact key={id} name={name} number={number} id={id} />
+          ))}
+        </ul>
+      )}
+    </>
   );
 };
 
