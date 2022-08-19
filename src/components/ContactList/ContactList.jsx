@@ -21,7 +21,7 @@ const ContactList = () => {
 
   return (
     <>
-      {error && <h2>Упс, что-то пошло не так...</h2>}
+      {error && <h2>Ops, something was wrong...</h2>}
 
       {isLoading ? (
         <h2>...Loading...</h2>
